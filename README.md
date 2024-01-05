@@ -38,7 +38,7 @@ Once the macro checks that everything is within tolerance, it'll re-home the pri
 
 ## Configuring the macro
 This script was made for the stock Sovol SV06 Plus, if that is your printer, the only change you could do is changing the tolerance.
-The tolerance is set in milliliters at the beginning of the `Z_TRAMMING` macro.
+The tolerance is set in millimeters at the beginning of the `Z_TRAMMING` macro.
 ```yaml
 [gcode_macro Z_TRAMMING]
 variable_tolerance: 0.05    # Set the tolerance in mm <-----
