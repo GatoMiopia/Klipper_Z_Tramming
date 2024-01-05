@@ -112,7 +112,7 @@ To activate it, you'll need to comment the `M18` command and uncomment the `SET_
         {action_respond_info("Right is " ~ '%0.2f'| format(left_probe - right_probe|float) ~ " mm higher")}
         M18 # <-----
         # Uncommenting the step below MAY DAMAGE YOUR PRINTER.
-        # Make sure you've read the documentation and undestand the usage and the risks!
+        # Make sure you have read the documentation and undestand the usage and the risks!
         # Use at your own risk.
         #SET_STEPPER_ENABLE STEPPER=stepper_z ENABLE=0 # <-----
         {action_respond_info("Steppers disabled and print paused. Run Z_TRAMMING again to resume.")}
@@ -126,7 +126,7 @@ To activate it, you'll need to comment the `M18` command and uncomment the `SET_
         {action_respond_info("Right is " ~ '%0.2f'| format(right_probe - left_probe|float) ~ " mm lower")}
         M18 # <-----
         # Uncommenting the step below MAY DAMAGE YOUR PRINTER.
-        # Make sure you've read the documentation and undestand the usage and the risks!
+        # Make sure you have read the documentation and undestand the usage and the risks!
         # Use at your own risk.
         #SET_STEPPER_ENABLE STEPPER=stepper_z ENABLE=0 # <-----
         {action_respond_info("Steppers disabled and print paused. Run Z_TRAMMING again to resume.")}
