@@ -46,8 +46,9 @@ But optionally, you can set the tolerance in millimeters at the beginning of the
 ```yaml
 [gcode_macro Z_TRAMMING]
 variable_mainsail: 0    # Set 1 if you're using Mainsail 2.9 or higher
-variable_tolerance: 0.05    # Set the tolerance in mm # <-----
+variable_tolerance: 0.05    # Set the tolerance in mm <-----
 variable_screw_pitch: 4    # Set lead screw pitch (See documentation for how to calculated).
+variable_advanced_mode: 0 # If you do not know what this does, DO NOT CHANGE IT!
 description: Measures the opposite ends of the X axis to determine if the Z screws are misaligned.
 gcode:
 ```
@@ -104,25 +105,18 @@ If you're interested on this, you can learn more on the original [issue on githu
 
 The implementation here is simple, but it can be dangerous if done wrong.
 
-To activate it, you'll need to comment the `M18` command and uncomment the `SET_STEPPER_ENABLE` command on 2 place inside the `_Z_TRAMMING_EVALUATE` macro, inside the "Compare sides" section.
+To activate it, you only need to change the `variable_advanced_mode` to `1`.
 
 ```yaml
-# Compare sides
-{% if left_probe - right_probe > tolerance %}
-    {action_respond_info("--------------------------------------")}
-    {action_respond_info("01:20 means 1 full turn and 20 minutes, CW=clockwise, CCW=counter-clockwise")}
-    {% set hours = ((left_probe - right_probe) / screw_pitch)|round(1, "floor")|int %}
-    {% set minutes = ((((left_probe - right_probe) / screw_pitch)* 60) % 60)|round(1, "floor")|int %}
-    {action_respond_info("Right lead screw:" ~ hours ~ ":" ~ minutes ~ " CCW")}
-    {action_respond_info("Right is " ~ '%0.2f'| format(left_probe - right_probe|float) ~ " mm higher")}
-    M18 # <-----
-    # Uncommenting the step below MAY DAMAGE YOUR PRINTER.
-    # Make sure you have read the documentation and undestand the usage and the risks!
-    # Use at your own risk.
-    #SET_STEPPER_ENABLE STEPPER=stepper_z ENABLE=0 # <-----
+[gcode_macro Z_TRAMMING]
+variable_mainsail: 0    # Set 1 if you're using Mainsail 2.9 or higher
+variable_tolerance: 0.05    # Set the tolerance in mm
+variable_screw_pitch: 4    # Set lead screw pitch (See documentation for how to calculated).
+variable_advanced_mode: 0 # If you do not know what this does, DO NOT CHANGE IT! <-----
+description: Measures the opposite ends of the X axis to determine if the Z screws are misaligned.
 ```
 
-With this done, the macro is ready, but you should always run the macro until you have made it within tolerance.
+With this done, the macro is ready, but you should **always run the macro until you have made it within tolerance**.
 
 In the following code you can see why:
 ```yaml
