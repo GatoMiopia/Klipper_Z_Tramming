@@ -112,7 +112,7 @@ To activate it, you only need to change the `variable_advanced_mode` to `1`.
 variable_mainsail: 0    # Set 1 if you're using Mainsail 2.9 or higher
 variable_tolerance: 0.05    # Set the tolerance in mm
 variable_screw_pitch: 4    # Set lead screw pitch (See documentation for how to calculated).
-variable_advanced_mode: 0 # If you do not know what this does, DO NOT CHANGE IT! <-----
+variable_advanced_mode: 1 # <----- If you do not know what this does, DO NOT CHANGE IT!
 description: Measures the opposite ends of the X axis to determine if the Z screws are misaligned.
 ```
 
