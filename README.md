@@ -18,7 +18,7 @@ This allows you to use the macro in 2 different ways:
 
 ### Standalone Z calibration
 When executed directly via the `Z_TRAMMING` command, the macro will home the printer, if not done yet, and proceed to probe both sides of the bed to determine the difference in height.
-Then, it'll print to the console the defined tolerance, the current difference, the correction needed and will disable the steppers for the correction to be made.
+Then, it'll print to the console (see [config section](#configuring-the-macro) for Popup Helper) the defined tolerance, the current difference, the correction needed and will disable the steppers for the correction to be made.
 The adjustment is done in hours and minutes, same as the SCREW_TILT_ADJUST macro. Meaning that "minutes" refers to "minutes of a clock face".
 So, for example, 15 minutes is a quarter of a full turn. 01:20 means 1 full turn and 20 minutes. As for direction, CW means clockwise and CCW means counter-clockwise.
 **NOTE:** The correction calculation is still a work in progress, as turning one side affects both in a way a don't completely understand yet. But having the way to turn it and the current height difference will help you understand what you got to do.
@@ -37,12 +37,18 @@ Once the macro checks that everything is within tolerance, it'll re-home the pri
 **NOTE:** The saved state is only available during the current session. Any restart of the printer, mcu/firmware, klipper or power cycle would erase it. If that happens, just restart the print as if printing the first time.
 
 ## Configuring the macro
-This script was made for the stock Sovol SV06 Plus, if that is your printer, the only change you could do is changing the tolerance.
-The tolerance is set in millimeters at the beginning of the `Z_TRAMMING` macro.
+The first configuration is the UI Popup Helper. For now, it is only implemented via the Macro Prompts in Mainsail 2.9.0.
+If you have this version or higher, you should set the `variable_mainsail` to `1` in the `Z_TRAMMING` macro, just as the tolerance settings below.
+
+If you have any other UI set, you should keep it as `0` and use it through the console.
+
+This script was made for the stock Sovol SV06 Plus, if that is your printer, you don't need to change anything else.
+But optionally, you can set the tolerance in millimeters at the beginning of the `Z_TRAMMING` macro.
 ```yaml
 [gcode_macro Z_TRAMMING]
-variable_tolerance: 0.05    # Set the tolerance in mm <-----
-variable_screw_height: 4    # Set lead screw height
+variable_mainsail: 0    # Set 1 if you're using Mainsail 2.9 or higher
+variable_tolerance: 0.05    # Set the tolerance in mm # <-----
+variable_screw_pitch: 4    # Set lead screw pitch (See documentation for how to calculated).
 description: Measures the opposite ends of the X axis to determine if the Z screws are misaligned.
 gcode:
 ```
@@ -101,7 +107,7 @@ The implementation here is simple, but it can be dangerous if done wrong.
 
 To activate it, you'll need to comment the `M18` command and uncomment the `SET_STEPPER_ENABLE` command on 2 place inside the `_Z_TRAMMING_EVALUATE` macro, inside the "Compare sides" section.
 
-```jinja2
+```yaml
 # Compare sides
 {% if left_probe - right_probe > tolerance %}
     {action_respond_info("--------------------------------------")}
@@ -146,7 +152,7 @@ To activate it, you'll need to comment the `M18` command and uncomment the `SET_
 With this done, the macro is ready, but you should always run the macro until you have made it within tolerance.
 
 In the following code you can see why:
-```jinja2
+```yaml
 {% if printer.toolhead.homed_axes == "xyz" %}
   G28 Z
 {% else %}
