@@ -101,7 +101,7 @@ The implementation here is simple, but it can be dangerous if done wrong.
 
 To activate it, you'll need to comment the `M18` command and uncomment the `SET_STEPPER_ENABLE` command on 2 place inside the `_Z_TRAMMING_EVALUATE` macro, inside the "Compare sides" section.
 
-```yaml
+```jinja2
 # Compare sides
     {% if left_probe - right_probe > tolerance %}
         {action_respond_info("--------------------------------------")}
