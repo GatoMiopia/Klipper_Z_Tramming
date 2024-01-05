@@ -28,13 +28,12 @@ You can check and set the tolerance together with the other configs in the [conf
 
 ### Automatic Z alignment check
 This second way to use it was made in order to automate the printing process.
-To do that, you'd put the `Z_TRAMMING` macro into your `PRINT_START` macro.
-The macro will then save the printing state, perform the same check as before, and proceed as normal if the the difference is within the set tolerance.
+To do that, you'd put `Z_TRAMMING` into your `PRINT_START` macro.
+The macro will then perform the same check as before, and proceed as normal if the the difference is within the set tolerance.
 
 If it is out of tolerance, the printer will stop and show you the corrections needed through the console, same as before.
 Once you've done the necessary corrections, you should run `Z_TRAMMING` again and the process will repeat.
-Once the macro checks that everything is within tolerance, it'll re-home the printer and resume printing from the saved state.
-**NOTE:** The saved state is only available during the current session. Any restart of the printer, mcu/firmware, klipper or power cycle would erase it. If that happens, just restart the print as if printing the first time.
+Once the macro checks that everything is within tolerance, it'll re-home the printer and you can restart the print.
 
 ## Configuring the macro
 The first configuration is the UI Popup Helper. For now, it is only implemented via the Macro Prompts in Mainsail 2.9.0.
@@ -121,32 +120,6 @@ To activate it, you'll need to comment the `M18` command and uncomment the `SET_
     # Make sure you have read the documentation and undestand the usage and the risks!
     # Use at your own risk.
     #SET_STEPPER_ENABLE STEPPER=stepper_z ENABLE=0 # <-----
-    {action_respond_info("Steppers disabled and print paused. Run Z_TRAMMING again to resume.")}
-    _Z_TRAMMING_ERROR
-{% elif left_probe - right_probe < tolerance * -1 %}
-    {action_respond_info("--------------------------------------")}
-    {action_respond_info("01:20 means 1 full turn and 20 minutes, CW=clockwise, CCW=counter-clockwise")}
-    {% set hours = ((right_probe - left_probe) / screw_pitch)|round(1, "floor")|int %}
-    {% set minutes = ((((right_probe - left_probe) / screw_pitch)* 60) % 60)|round(1, "floor")|int %}
-    {action_respond_info("Right lead screw: " ~ hours ~ ":" ~ minutes ~ " CW")}
-    {action_respond_info("Right is " ~ '%0.2f'| format(right_probe - left_probe|float) ~ " mm lower")}
-    M18 # <-----
-    # Uncommenting the step below MAY DAMAGE YOUR PRINTER.
-    # Make sure you have read the documentation and undestand the usage and the risks!
-    # Use at your own risk.
-    #SET_STEPPER_ENABLE STEPPER=stepper_z ENABLE=0 # <-----
-    {action_respond_info("Steppers disabled and print paused. Run Z_TRAMMING again to resume.")}
-    _Z_TRAMMING_ERROR
-{% else %}
-    {action_respond_info("--------------------------------------")}
-    {% if left_probe > right_probe %}
-        {action_respond_info("Right is " ~ '%0.2f'| format(left_probe - right_probe|float) ~ " mm higher")}
-    {% else %}
-        {action_respond_info("Right is " ~ '%0.2f'| format(right_probe - left_probe|float) ~ " mm lower")}
-    {% endif %}
-    {action_respond_info("Within tolerance.")}
-{% endif %}
-{action_respond_info("--------------Adjustment--------------")}
 ```
 
 With this done, the macro is ready, but you should always run the macro until you have made it within tolerance.
