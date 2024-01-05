@@ -77,8 +77,10 @@ Then, get the difference between the Z10 and the current position. This is your 
 Now, you're gonna input those measurements in their respective places at the start of the `Z_TRAMMING` macro.
 ```yaml
 [gcode_macro Z_TRAMMING]
+variable_mainsail: 0    # Set 1 if you're using Mainsail 2.9 or higher
 variable_tolerance: 0.05    # Set the tolerance in mm
 variable_screw_pitch: 4    # Set lead screw pitch (See documentation for how to calculated). <-----
+variable_advanced_mode: 0 # If you do not know what this does, DO NOT CHANGE IT!
 description: Measures the opposite ends of the X axis to determine if the Z screws are misaligned.
 gcode:
     # Points to probe (on the SV06+)
