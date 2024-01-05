@@ -101,7 +101,7 @@ The implementation here is simple, but it can be dangerous if done wrong.
 
 To activate it, you'll need to comment the `M18` command and uncomment the `SET_STEPPER_ENABLE` command on 2 place inside the `_Z_TRAMMING_EVALUATE` macro, inside the "Compare sides" section.
 
-```jinja2
+```yaml
 # Compare sides
     {% if left_probe - right_probe > tolerance %}
         {action_respond_info("--------------------------------------")}
@@ -110,11 +110,11 @@ To activate it, you'll need to comment the `M18` command and uncomment the `SET_
         {% set minutes = ((((left_probe - right_probe) / screw_pitch)* 60) % 60)|round(1, "floor")|int %}
         {action_respond_info("Right lead screw:" ~ hours ~ ":" ~ minutes ~ " CCW")}
         {action_respond_info("Right is " ~ '%0.2f'| format(left_probe - right_probe|float) ~ " mm higher")}
-        M18 <-----
+        M18 # <-----
         # Uncommenting the step below MAY DAMAGE YOUR PRINTER.
         # Make sure you've read the documentation and undestand the usage and the risks!
         # Use at your own risk.
-        #SET_STEPPER_ENABLE STEPPER=stepper_z ENABLE=0 <-----
+        #SET_STEPPER_ENABLE STEPPER=stepper_z ENABLE=0 # <-----
         {action_respond_info("Steppers disabled and print paused. Run Z_TRAMMING again to resume.")}
         _Z_TRAMMING_ERROR
     {% elif left_probe - right_probe < tolerance * -1 %}
@@ -124,11 +124,11 @@ To activate it, you'll need to comment the `M18` command and uncomment the `SET_
         {% set minutes = ((((right_probe - left_probe) / screw_pitch)* 60) % 60)|round(1, "floor")|int %}
         {action_respond_info("Right lead screw: " ~ hours ~ ":" ~ minutes ~ " CW")}
         {action_respond_info("Right is " ~ '%0.2f'| format(right_probe - left_probe|float) ~ " mm lower")}
-        M18 <-----
+        M18 # <-----
         # Uncommenting the step below MAY DAMAGE YOUR PRINTER.
         # Make sure you've read the documentation and undestand the usage and the risks!
         # Use at your own risk.
-        #SET_STEPPER_ENABLE STEPPER=stepper_z ENABLE=0 <-----
+        #SET_STEPPER_ENABLE STEPPER=stepper_z ENABLE=0 # <-----
         {action_respond_info("Steppers disabled and print paused. Run Z_TRAMMING again to resume.")}
         _Z_TRAMMING_ERROR
     {% else %}
