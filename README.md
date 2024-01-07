@@ -17,7 +17,7 @@ This macro has only one visible command, the `Z_TRAMMING` macro.
 This allows you to use the macro in 2 different ways:
 
 ### Standalone Z calibration
-When executed directly via the `Z_TRAMMING` command, the macro will home the printer, if not done yet, and proceed to probe both sides of the bed to determine the difference in height.
+When executed directly via the `Z_TRAMMING` command, the macro will home the printer, if not done yet, and proceed to probe both sides of the bed, right above the bed screws, to determine the difference in height.
 Then, it'll print to the console (see [config section](#configuring-the-macro) for Popup Helper) the defined tolerance, the current difference, the correction needed and will disable the steppers for the correction to be made.
 The adjustment is done in hours and minutes, same as the SCREW_TILT_ADJUST macro. Meaning that "minutes" refers to "minutes of a clock face".
 So, for example, 15 minutes is a quarter of a full turn. 01:20 means 1 full turn and 20 minutes. As for direction, CW means clockwise and CCW means counter-clockwise.
@@ -45,10 +45,10 @@ This script was made for the stock Sovol SV06 Plus, if that is your printer, you
 But optionally, you can set the tolerance in millimeters at the beginning of the `Z_TRAMMING` macro.
 ```yaml
 [gcode_macro Z_TRAMMING]
-variable_mainsail: 0        # Set 1 if you're using Mainsail 2.9 or higher
-variable_tolerance: 0.05    # Set the tolerance in mm <-----
-variable_screw_pitch: 4     # Set lead screw pitch (See documentation for how to calculated).
-variable_advanced_mode: 0   # If you do not know what this does, DO NOT CHANGE IT!
+variable_mainsail: 0          # Set 1 if you're using Mainsail 2.9 or higher
+variable_tolerance: 0.05      # <----- Set the tolerance in mm
+variable_screw_pitch: 4       # Set lead screw pitch (See documentation for how to calculated).
+variable_advanced_mode: 0     # If you do not know what this does, DO NOT CHANGE IT!
 description: Measures the opposite ends of the X axis to determine if the Z screws are misaligned.
 gcode:
 ```
@@ -57,37 +57,33 @@ gcode:
 You can use this macro in any cartesian printer with the same dual stepper single driver setup, **BUT SOME CHANGES ARE REQUIRED!**
 
 The first changes are the bed size and probe location.
-To calculate the probe points, first home your printer and get the middle of the Y axis. This number is probably gonna be different from the actual center of the bed, because we're centering the probe instead of the nozzle.
+The probing is done right above the bed screws in order to minimize bed bending variations.
+You can use any 2 points on the bed, but above the screws seams to be the most reliable to avoid bending variations.
 
-Next you're gonna get the X axis probe points.
-Start from the side opposite to the probe, position it as far as you can without leaving the bed.
-**NOTE:** If you're print head is capable of leaving the bed on both side, leave a safe margin for probing, based on the type of probe you have.
+If you have `screws_tilt_calculate` setup, you should already have the right values in your `printer.cfg`. Just select the correct screws and input the values as shown bellow.
 
-With the print head in place, you'll get the absolute X position and also the distance from the tip of the probe to the end of the bed.
+If for some reason you don't have it yet, just home the printer, position the probe right above one of the screws and get the Y and X absolute position.
+The Y position should be the same for both screws, just change the X axis until you're in the right spot.
 
-In the opposite side, you'll position the print head in a way that the distance from the tip of the probe to the end of the bed is the same as the other side.
-With the print head in place, get the absolute X position again.
+With those in hand, there is only one measurement left, the lead screw pitch.
 
-With all of those in hand, there is only one measurement left, the lead screw pitch.
-To measure this you'll need something to mark a position. Anything that is easy to hold still will work.
-
-With your printer turned on and homed, put your printer on Z10 using `G1 Z10` or the UI, mark the position of the groove on the leadscrew coupler and raise the Z axis until you have a full turn.
+To measure this, put your printer on Z10 using `G1 Z10` or the UI, mark the position of the groove on the leadscrew coupler and raise the Z axis until you have a full turn.
 Then, get the difference between the Z10 and the current position. This is your leadscrew pitch.
 
 Now, you're gonna input those measurements in their respective places at the start of the `Z_TRAMMING` macro.
 ```yaml
 [gcode_macro Z_TRAMMING]
-variable_mainsail: 0        # Set 1 if you're using Mainsail 2.9 or higher
-variable_tolerance: 0.05    # Set the tolerance in mm
-variable_screw_pitch: 4     # Set lead screw pitch (See documentation for how to calculated). <-----
-variable_advanced_mode: 0   # If you do not know what this does, DO NOT CHANGE IT!
+variable_mainsail: 0          # Set 1 if you're using Mainsail 2.9 or higher
+variable_tolerance: 0.05      # Set the tolerance in mm
+variable_screw_pitch: 4       # <----- Set lead screw pitch (See documentation for how to calculated).
+variable_advanced_mode: 0     # If you do not know what this does, DO NOT CHANGE IT!
 description: Measures the opposite ends of the X axis to determine if the Z screws are misaligned.
 gcode:
     # Points to probe (on the SV06+)
-    {% set LEFT = 0 %} # Left most probe point <-----
-    {% set RIGHT = 246 %} # Right equivalent probe point <-----
-    {% set MIDDLE_Y = 170 %} # Middle of the bed on the Y axis <-----
-    {% set SPEED = 6000 %} # Travel speed between probes
+    {% set LEFT_X = 5 %}      # <----- Front left X screw position
+    {% set RIGHT_X = 244 %}   # <----- Front right X screw position
+    {% set Y_AXIS = 55 %}     # <----- Y axis screws position
+    {% set SPEED = 6000 %}    # Travel speed between probes
 ```
 
 You can also change the travel speed between probes as seen above, but it shouldn't make much of a difference.
@@ -111,10 +107,10 @@ To activate it, you only need to change the `variable_advanced_mode` to `1`.
 
 ```yaml
 [gcode_macro Z_TRAMMING]
-variable_mainsail: 0        # Set 1 if you're using Mainsail 2.9 or higher
-variable_tolerance: 0.05    # Set the tolerance in mm
-variable_screw_pitch: 4     # Set lead screw pitch (See documentation for how to calculated).
-variable_advanced_mode: 1   # <----- If you do not know what this does, DO NOT CHANGE IT!
+variable_mainsail: 0          # Set 1 if you're using Mainsail 2.9 or higher
+variable_tolerance: 0.05      # Set the tolerance in mm
+variable_screw_pitch: 4       # Set lead screw pitch (See documentation for how to calculated).
+variable_advanced_mode: 1     # <----- If you do not know what this does, DO NOT CHANGE IT!
 description: Measures the opposite ends of the X axis to determine if the Z screws are misaligned.
 ```
 
